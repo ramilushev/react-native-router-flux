@@ -51,8 +51,7 @@ export default class TabBar extends React.Component {
 
     componentWillReceiveProps({selected}){
         //console.log("TABBAR "+selected);
-        InteractionManager.runAfterInteractions(() =>
-            this.setState(this.getChildrenState(selected)));
+            this.setState(this.getChildrenState(selected));
     }
     render(){
         if (this.state.hideTabBar){
