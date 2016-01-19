@@ -54,10 +54,10 @@ export class ExRouteAdapter {
             :
             React.cloneElement(React.Children.only(this.route.children), {...this.route.props, data:this.props, route:this.route});
 
-        const Header = this.route.props.header;
+        const Header = this.route.header;
         const header = Header ? <Header {...this.route.props} {...this.props}/> : null;
 
-        const Footer = this.route.props.footer;
+        const Footer = this.route.footer;
         const footer = Footer ? <Footer {...this.route.props} {...this.props}/> : null;
 
         return (
@@ -86,6 +86,16 @@ export class ExRouteAdapter {
     }
 
     renderLeftButton(navigator, index, state){
+        if (this.route.props.onLeft && this.route.props.leftTitle) {
+            return (<TouchableOpacity
+              touchRetentionOffset={ExNavigator.Styles.barButtonTouchRetentionOffset}
+              onPress={() => this.route.props.onLeft({...this.route.props, ...this.props})}
+              style={[ExNavigator.Styles.barLeftButton, this.route.props.leftButtonStyle]}>
+                <Text
+                  style={[ExNavigator.Styles.barLeftButtonText, this.route.props.leftButtonTextStyle]}>{this.route.props.leftTitle}</Text>
+            </TouchableOpacity>);
+        }
+        
         if (index === 0 || index < navigator.getCurrentRoutes().length-1) {
             return null;
         }
@@ -105,7 +115,7 @@ export class ExRouteAdapter {
                     style={[
             ExNavigatorStyles.barButtonText,
             ExNavigatorStyles.barBackButtonText,
-            this._barButtonTextStyle,
+            navigator.props.barButtonTextStyle,
           ]}
                 >
                     {title}
@@ -120,7 +130,7 @@ export class ExRouteAdapter {
                 <BackIcon
                     style={[
             ExNavigatorStyles.barButtonIcon,
-            this._barButtonIconStyle,
+            navigator.props.barButtonIconStyle,
           ]}
                 />
                 {buttonText}
@@ -152,7 +162,7 @@ class ExNavigationBar extends Navigator.NavigationBar {
         if (route.props.hideNavBar === false){
             return super.render();
         }
-        if (this.props.router.props.hideNavBar){
+        if (this.props.router.props.hideNavBar || route.props.hideNavBar){
             return null;
         }
         return super.render();
@@ -263,7 +273,7 @@ export default class ExRouter extends React.Component {
                 <ExNavigator ref="nav" initialRouteStack={router.stack.map(route => new ExRouteAdapter(router.routes[route]))}
                          style={styles.transparent}
                          sceneStyle={{ paddingTop: 0 }}
-                         renderNavigationBar={props=><ExNavigationBar {...props} router={router} navigationStyles={Navigator.NavigationBar.StylesIOS}/>}
+                         renderNavigationBar={props=><ExNavigationBar navigationStyles={Navigator.NavigationBar.StylesIOS} {...props} router={router}/>}
                     {...this.props}
                 />
                 {footer}
